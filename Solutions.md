@@ -98,3 +98,111 @@ SELECT order_month,
 | MARCH    |	1 |
 | APRIL    |	1 |
 
+
+
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+**Day 04/50** 
+
+
+Find the top 2 products in the top 2 categories based on spend amount?
+
+
+```sql
+
+create table orders(
+  	category varchar(20),
+	product varchar(20),
+	user_id int , 
+  	spend int,
+  	transaction_date DATE
+);
+
+Insert into orders values
+('appliance','refrigerator',165,246.00,'2021/12/26'),
+('appliance','refrigerator',123,299.99,'2022/03/02'),
+('appliance','washingmachine',123,219.80,'2022/03/02'),
+('electronics','vacuum',178,152.00,'2022/04/05'),
+('electronics','wirelessheadset',156,	249.90,'2022/07/08'),
+('electronics','TV',145,189.00,'2022/07/15'),
+('Television','TV',165,129.00,'2022/07/15'),
+('Television','TV',163,129.00,'2022/07/15'),
+('Television','TV',141,129.00,'2022/07/15'),
+('toys','Ben10',145,189.00,'2022/07/15'),
+('toys','Ben10',145,189.00,'2022/07/15'),
+('toys','yoyo',165,129.00,'2022/07/15'),
+('toys','yoyo',163,129.00,'2022/07/15'),
+('toys','yoyo',141,129.00,'2022/07/15'),
+('toys','yoyo',145,189.00,'2022/07/15'),
+('electronics','vacuum',145,189.00,'2022/07/15');
+
+
+
+SELECT * FROM orders;
+
+```
+
+| category      | product          | user_id | spend | transaction_date |
+|---------------|------------------|---------|-------|------------------|
+| appliance     | refrigerator     | 165     | 246   | 2021-12-26       |
+| appliance     | refrigerator     | 123     | 300   | 2022-03-02       |
+| appliance     | washingmachine   | 123     | 220   | 2022-03-02       |
+| electronics   | vacuum           | 178     | 152   | 2022-04-05       |
+| electronics   | wirelessheadset  | 156     | 250   | 2022-07-08       |
+| electronics   | TV               | 145     | 189   | 2022-07-15       |
+| Television    | TV               | 165     | 129   | 2022-07-15       |
+| Television    | TV               | 163     | 129   | 2022-07-15       |
+| Television    | TV               | 141     | 129   | 2022-07-15       |
+| toys          | Ben10            | 145     | 189   | 2022-07-15       |
+| toys          | Ben10            | 145     | 189   | 2022-07-15       |
+| toys          | yoyo             | 165     | 129   | 2022-07-15       |
+| toys          | yoyo             | 163     | 129   | 2022-07-15       |
+| toys          | yoyo             | 141     | 129   | 2022-07-15       |
+| toys          | yoyo             | 145     | 189   | 2022-07-15       |
+| electronics   | vacuum           | 145     | 189   | 2022-07-15       |
+
+
+```sql
+
+WITH top_category AS( SELECT category,
+					         SUM(spend) AS total_spent
+					 FROM orders
+					 GROUP BY category 
+					 ORDER BY total_spent DESC
+					 LIMIT 2),
+	
+top_product AS (SELECT category,
+       			product,
+	   			SUM(spend) AS total_spent,
+	   			DENSE_RANK() OVER (PARTITION BY category) AS rn
+			FROM orders
+			GROUP BY category, product
+			ORDER BY category, total_spent DESC
+		       ),
+	  
+top_cat_prod AS (SELECT tp.category,
+				  tp.product,
+				  tp.total_spent,
+				  ROW_NUMBER() OVER (PARTITION BY tp.category) AS rn
+				FROM top_product AS tp
+				RIGHT JOIN top_category AS tc ON tp.category = tc.category
+				  )
+	SELECT category,
+	       product,
+		   total_spent
+		FROM top_cat_prod
+		WHERE rn <= 2
+
+```
+
+
+| category | product | total_spent |
+|----------|---------|-------------|
+| electronics | vacuum | 341 |
+| electronics | wirelessheadset |	250 |
+| toys | yoyo | 576 |
+| toys | Ben10 | 378 |
+
+
