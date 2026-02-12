@@ -223,3 +223,89 @@ SELECT e.id,
 | 11	| Meir |	2 |
 | 90	| Winston |	3 |
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+ **Day 13/50**
+
+```sql
+
+DROP TABLE IF EXISTS employees;
+CREATE TABLE employees (
+    emp_id INT PRIMARY KEY,
+    name VARCHAR(100),
+    manager_id INT,
+    FOREIGN KEY (manager_id) REFERENCES employees(emp_id)
+);
+
+INSERT INTO employees (emp_id, name, manager_id) VALUES
+(1, 'John Doe', NULL),        -- John Doe is not a manager
+(2, 'Jane Smith', 1),          -- Jane Smith's manager is John Doe
+(3, 'Alice Johnson', 1),       -- Alice Johnson's manager is John Doe
+(4, 'Bob Brown', 3),           -- Bob Brown's manager is Alice Johnson
+(5, 'Emily White', NULL),      -- Emily White is not a manager
+(6, 'Michael Lee', 3),         -- Michael Lee's manager is Alice Johnson
+(7, 'David Clark', NULL),      -- David Clark is not a manager
+(8, 'Sarah Davis', 2),         -- Sarah Davis's manager is Jane Smith
+(9, 'Kevin Wilson', 2),        -- Kevin Wilson's manager is Jane Smith
+(10, 'Laura Martinez', 4);     -- Laura Martinez's manager is Bob Brown
+
+```
+
+
+
+You have a table named employees containing information about employees, 
+including their emp_id, name, and manager_id. 
+The manager_id refers to the emp_id of the employee's manager.
+
+
+write a SQL query to retrieve all employees' 
+details along with their manager's names based on the manager ID
+
+```sql
+
+SELECT * FROM employees;
+
+```
+| emp_id | name            | manager_id |
+|--------|-----------------|------------|
+| 1      | John Doe       |            |
+| 2      | Jane Smith     | 1          |
+| 3      | Alice Johnson  | 1          |
+| 4      | Bob Brown      | 3          |
+| 5      | Emily White    |            |
+| 6      | Michael Lee    | 3          |
+| 7      | David Clark    |            |
+| 8      | Sarah Davis    | 2          |
+| 9      | Kevin Wilson   | 2          |
+| 10     | Laura Martinez | 4          |
+
+
+```sql
+
+
+
+SELECT e.emp_id,
+       e.name,
+	   e.manager_id,
+	   m.name AS manager_name
+FROM employees AS e
+    LEFT JOIN employees AS m ON m.emp_id = e.manager_id;
+
+``` 
+
+| emp_id | name            | manager_id | manager_name   |
+|--------|-----------------|------------|----------------|
+| 1      | John Doe       |            |                |
+| 2      | Jane Smith     | 1          | John Doe       |
+| 3      | Alice Johnson  | 1          | John Doe       |
+| 4      | Bob Brown      | 3          | Alice Johnson  |
+| 5      | Emily White    |            |                |
+| 6      | Michael Lee    | 3          | Alice Johnson  |
+| 7      | David Clark    |            |                |
+| 8      | Sarah Davis    | 2          | Jane Smith     |
+| 9      | Kevin Wilson   | 2          | Jane Smith     |
+| 10     | Laura Martinez | 4          | Bob Brown      |
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
