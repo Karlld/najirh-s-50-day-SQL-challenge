@@ -127,4 +127,99 @@ WITH cust_returned AS (SELECT o.*,
 | 1009     | C005        | 2023-09-05 | P002      | 3       | New              |
 | 1010     | C001        | 2023-10-20 | P002      | 1       | New              |
 
---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+**Day 12/50**
+
+
+```sql
+
+DROP TABLE IF EXISTS Employees;
+-- Create Employees table
+CREATE TABLE Employees (
+    id INT PRIMARY KEY,
+    name VARCHAR(255)
+);
+
+-- Insert sample data into Employees table
+INSERT INTO Employees (id, name) VALUES
+    (1, 'Alice'),
+    (7, 'Bob'),
+    (11, 'Meir'),
+    (90, 'Winston'),
+    (3, 'Jonathan');
+
+
+DROP TABLE IF EXISTS EmployeeUNI;
+-- Create EmployeeUNI table
+CREATE TABLE EmployeeUNI (
+    id INT PRIMARY KEY,
+    unique_id INT
+);
+
+-- Insert sample data into EmployeeUNI table
+INSERT INTO EmployeeUNI (id, unique_id) VALUES
+    (3, 1),
+    (11, 2),
+    (90, 3);
+
+```
+
+
+
+
+
+Write a solution to show the unique ID of each user, 
+If a user does not have a unique ID replace just show null.
+
+Return employee name and their unique_id.
+
+
+
+
+```sql
+
+SELECT * FROM Employees;
+
+```
+
+
+| id | name |
+|----|------|
+| 1	 | Alice |
+| 7	 | Bob |
+| 11 | Meir |
+| 90 | Winston |
+| 3	 | Jonathan |
+
+```sql
+
+SELECT * FROM EmployeeUNI;
+
+```
+
+| id | unique_id |
+|----|-----------|
+| 3 |	1 |
+| 11 |	2 |
+| 90 |	3 |
+
+```sql
+
+SELECT e.id,
+       e.name,
+	   COALESCE(uni.unique_id, 0) AS unique_id
+   FROM employees AS e
+   LEFT JOIN employeeUNI AS uni ON uni.id = e.id 
+   ORDER BY id; 
+```
+
+| id | name | unique_id |
+|----|------|-----------|
+| 1	 |Alice |	0 |
+| 3	 | Jonathan |	1 |
+| 7	 | Bob |	0 |
+| 11	| Meir |	2 |
+| 90	| Winston |	3 |
+
