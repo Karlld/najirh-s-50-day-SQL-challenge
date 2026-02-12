@@ -167,15 +167,10 @@ INSERT INTO EmployeeUNI (id, unique_id) VALUES
 ```
 
 
-
-
-
 Write a solution to show the unique ID of each user, 
 If a user does not have a unique ID replace just show null.
 
 Return employee name and their unique_id.
-
-
 
 
 ```sql
