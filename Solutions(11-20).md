@@ -579,3 +579,111 @@ SELECT customer_id,
 ---------------------------------------------------------------------------------------------------------------------------------------------
 
 
+**Day 18/50**
+
+```sql
+-- Creating the hotel_bookings table
+CREATE TABLE hotel_bookings (
+    booking_id SERIAL PRIMARY KEY,
+    booking_date DATE,
+    hotel_name VARCHAR(100),
+    total_guests INT,
+    total_nights INT,
+    total_price DECIMAL(10, 2)
+);
+
+-- Inserting sample data for hotel bookings for 2023 and 2022
+INSERT INTO hotel_bookings (booking_date, hotel_name, total_guests, total_nights, total_price) VALUES
+    ('2023-01-05', 'Hotel A', 2, 3, 300.00),
+    ('2023-02-10', 'Hotel B', 3, 5, 600.00),
+    ('2023-03-15', 'Hotel A', 4, 2, 400.00),
+    ('2023-04-20', 'Hotel B', 2, 4, 500.00),
+    ('2023-05-25', 'Hotel A', 3, 3, 450.00),
+    ('2023-06-30', 'Hotel B', 5, 2, 350.00),
+    ('2023-07-05', 'Hotel A', 2, 5, 550.00),
+    ('2023-08-10', 'Hotel B', 3, 3, 450.00),
+    ('2023-09-15', 'Hotel A', 4, 4, 500.00),
+    ('2023-10-20', 'Hotel B', 2, 3, 300.00),
+    ('2023-11-25', 'Hotel A', 3, 2, 350.00),
+    ('2023-12-30', 'Hotel B', 5, 4, 600.00),
+    ('2022-01-05', 'Hotel A', 2, 3, 300.00),
+    ('2022-02-10', 'Hotel B', 3, 5, 600.00),
+    ('2022-03-15', 'Hotel A', 4, 2, 400.00),
+    ('2022-04-20', 'Hotel B', 2, 4, 500.00),
+    ('2022-05-25', 'Hotel A', 3, 3, 450.00),
+    ('2022-06-30', 'Hotel B', 5, 2, 350.00),
+    ('2022-07-05', 'Hotel A', 2, 5, 550.00),
+    ('2022-08-10', 'Hotel B', 3, 3, 450.00),
+    ('2022-09-15', 'Hotel A', 4, 4, 500.00),
+    ('2022-10-20', 'Hotel B', 2, 3, 300.00),
+    ('2022-11-25', 'Hotel A', 3, 2, 350.00),
+    ('2022-12-30', 'Hotel B', 5, 4, 600.00);
+
+```
+
+
+Write a SQL query to find out each hotel’s best 
+performing months based on revenue. 
+
+
+
+
+```sql
+
+SELECT * FROM hotel_bookings;
+
+```
+| booking_id | booking_date | hotel_name | total_guests | total_nights | total_price |
+|------------|-------------|------------|--------------|--------------|------------|
+| 1  | 2023-01-05 | Hotel A | 2 | 3 | 300.00 |
+| 2  | 2023-02-10 | Hotel B | 3 | 5 | 600.00 |
+| 3  | 2023-03-15 | Hotel A | 4 | 2 | 400.00 |
+| 4  | 2023-04-20 | Hotel B | 2 | 4 | 500.00 |
+| 5  | 2023-05-25 | Hotel A | 3 | 3 | 450.00 |
+| 6  | 2023-06-30 | Hotel B | 5 | 2 | 350.00 |
+| 7  | 2023-07-05 | Hotel A | 2 | 5 | 550.00 |
+| 8  | 2023-08-10 | Hotel B | 3 | 3 | 450.00 |
+| 9  | 2023-09-15 | Hotel A | 4 | 4 | 500.00 |
+| 10 | 2023-10-20 | Hotel B | 2 | 3 | 300.00 |
+| 11 | 2023-11-25 | Hotel A | 3 | 2 | 350.00 |
+| 12 | 2023-12-30 | Hotel B | 5 | 4 | 600.00 |
+| 13 | 2022-01-05 | Hotel A | 2 | 3 | 300.00 |
+| 14 | 2022-02-10 | Hotel B | 3 | 5 | 600.00 |
+| 15 | 2022-03-15 | Hotel A | 4 | 2 | 400.00 |
+| 16 | 2022-04-20 | Hotel B | 2 | 4 | 500.00 |
+| 17 | 2022-05-25 | Hotel A | 3 | 3 | 450.00 |
+| 18 | 2022-06-30 | Hotel B | 5 | 2 | 350.00 |
+| 19 | 2022-07-05 | Hotel A | 2 | 5 | 550.00 |
+| 20 | 2022-08-10 | Hotel B | 3 | 3 | 450.00 |
+| 21 | 2022-09-15 | Hotel A | 4 | 4 | 500.00 |
+| 22 | 2022-10-20 | Hotel B | 2 | 3 | 300.00 |
+| 23 | 2022-11-25 | Hotel A | 3 | 2 | 350.00 |
+| 24 | 2022-12-30 | Hotel B | 5 | 4 | 600.00 |
+
+
+```sql
+
+WITH hotel_months AS (SELECT   hotel_name,
+							   TO_CHAR(booking_date, 'MONTH') AS booking_month,
+							   SUM(total_price) AS total_income,
+							   ROW_NUMBER() OVER (PARTITION BY hotel_name ORDER BY SUM(total_price) DESC) AS rn
+							FROM hotel_bookings
+							GROUP BY booking_month, hotel_name
+							ORDER BY hotel_name, total_income DESC
+					 )
+					 
+SELECT hotel_name,
+       booking_month,
+	   total_income 
+	FROM hotel_months
+	WHERE rn <= 2;
+```
+
+| hotel_name | booking_month | total_income |
+|------------|---------------|--------------|
+| Hotel A | JULY     |	1100.00 |
+| Hotel A | SEPTEMBER |	1000.00 |
+| Hotel B | FEBRUARY |	1200.00 |
+| Hotel B | DECEMBER |	1200.00 |
+
+---------------------------------------------------------------------------------------------------------------------------------------------
