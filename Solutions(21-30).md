@@ -164,11 +164,13 @@ SELECT ROUND(100*SUM(immediate)/COUNT(immediate),2) AS immediate_percentage
 |----------------------|
 | 33.00 |
 
-```sql
+
 
 Write an SQL query to determine the percentage
 of orders where customers select next day delivery. 
 We're excited to see your solution! 
+
+```sql
 
 
 
