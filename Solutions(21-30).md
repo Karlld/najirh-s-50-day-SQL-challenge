@@ -71,7 +71,7 @@ SELECT product_id,
 
 **Day 22/50 SQL Challenge**
 
-``sql
+```sql
 
 DROP TABLE IF EXISTS delivery;
 -- Create the Delivery table
@@ -102,6 +102,7 @@ INSERT INTO Delivery (customer_id, order_date, customer_pref_delivery_date) VALU
 SELECT * FROM delivery;
 
 ```
+
 | delivery_id | customer_id | order_date  | customer_pref_delivery_date |
 |------------|-------------|------------|----------------------------|
 | 1          | 1           | 2019-08-01 | 2019-08-02                 |
@@ -132,6 +133,7 @@ called immediate; otherwise, it is called scheduled.
 Write a solution to find the percentage of immediate
 orders in the first orders of all customers, 
 rounded to 2 decimal places.
+
 
 ```sql
 
