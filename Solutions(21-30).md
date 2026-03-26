@@ -1077,3 +1077,84 @@ WITH total_spends AS  (SELECT customerid,
 | 13509      | 12       | December  | 70.80       |
 
 -------------------------------------------------------------------------------------------------------------------------------------------
+
+**day 28/50 days SQL Challenge**
+
+Using the same dataset from the previous challenge day.
+
+Write a query to find the highest-selling 
+product for each customer
+
+Return cx id, product description, 
+and total count of purchase.
+
+```sql
+
+WITH total_purchases AS (SELECT customerid,
+							 stockcode,
+							 description,
+							 SUM(quantity) AS total_purchased,
+							 RANK()OVER(PARTITION BY customerid ORDER BY SUM(quantity)DESC) AS rank
+						 FROM walmart_eu
+						 WHERE customerid NOTNULL
+						 GROUP BY customerid, stockcode, description
+						 ORDER BY customerid, SUM(quantity)DESC
+					 )
+					 
+SELECT customerid,
+       stockcode,
+	   description,
+	   total_purchased 
+  FROM total_purchases 
+  WHERE rank = 1
+  ORDER BY customerid
+  LIMIT 5;
+
+```
+
+| customerid | stockcode | description                          | total_purchased |
+|------------|-----------|--------------------------------------|-----------------|
+| 12371      | 21625     | VINTAGE UNION JACK APRON             | 3               |
+| 12520      | 22900     | SET 2 TEA TOWELS I LOVE LONDON       | 12              |
+| 12631      | 23256     | CHILDRENS CUTLERY SPACEBOY           | 4               |
+| 12682      | 22423     | REGENCY CAKESTAND 3 TIER             | 6               |
+| 12748      | 23009     | I LOVE LONDON BABY GIFT SET          | 1               |
+
+
+```sql
+
+Find each country and best selling product 
+Return country_name, description, total count of sale
+
+
+WITH country_totals AS (SELECT stockcode,
+							   description,
+							   country,
+							   SUM(quantity) AS total_sold,
+							   RANK()OVER(PARTITION BY country ORDER BY SUM(quantity)DESC) AS rank
+						   FROM walmart_eu
+						   GROUP BY country, stockcode, description
+						   ORDER BY country, SUM(quantity) DESC
+					   )
+					   
+SELECT country,
+       description,
+	   total_sold
+FROM country_totals
+WHERE rank = 1 
+ORDER BY country
+
+```
+
+| country          | description                           | total_sold |
+|------------------|---------------------------------------|------------|
+| Channel Islands  | LOVE HOT WATER BOTTLE                | 8          |
+| Finland          | CHILDRENS CUTLERY SPACEBOY           | 4          |
+| France           | REGENCY CAKESTAND 3 TIER             | 6          |
+| Germany          | SET 2 TEA TOWELS I LOVE LONDON       | 12         |
+| Hong Kong        | LUNCH BAG SPACEBOY DESIGN            | 80         |
+| Japan            | MAGIC DRAWING SLATE CIRCUS PARADE    | 1          |
+| Switzerland      | VINTAGE UNION JACK APRON             | 3          |
+| United Kingdom   | FOOD/DRINK SPONGE STICKERS           | 100        |
+
+-------------------------------------------------------------------------------------------------------------------------------------------
