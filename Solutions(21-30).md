@@ -1293,3 +1293,157 @@ WITH pay_types AS (SELECT  hotel_name,
 
 
 -------------------------------------------------------------------------------------------------------------------------------------------
+
+
+**Day 30/50 days SQL challenge**
+
+```sql
+
+DROP TABLE IF EXISTS orders;
+CREATE TABLE orders (
+    order_id INT PRIMARY KEY,
+    order_date DATE,
+    quantity INT
+);
+
+
+INSERT INTO orders 
+(order_id, order_date, quantity) 
+VALUES
+(1, '2023-01-02', 5),
+(2, '2023-02-05', 3),
+(3, '2023-02-07', 2),
+(4, '2023-03-10', 6),
+(5, '2023-02-15', 4),
+(6, '2023-04-21', 8),
+(7, '2023-05-28', 7),
+(8, '2023-05-05', 3),
+(9, '2023-08-10', 5),
+(10, '2023-05-02', 6),
+(11, '2023-02-07', 4),
+(12, '2023-04-15', 9),
+(13, '2023-03-22', 7),
+(14, '2023-04-30', 8),
+(15, '2023-04-05', 6),
+(16, '2023-02-02', 6),
+(17, '2023-01-07', 4),
+(18, '2023-05-15', 9),
+(19, '2023-05-22', 7),
+(20, '2023-06-30', 8),
+(21, '2023-07-05', 6);
+
+```
+
+
+-- Question
+You have amazon orders data
+
+For each week, find the total number 
+of orders. 
+Include only the orders that are 
+from the first quarter of 2023.
+
+The output should contain 'week' 
+and 'quantity'.
+
+```sql
+
+SELECT EXTRACT(week FROM order_date) AS week,
+       COUNT(order_id) AS order_quantity
+    FROM orders
+	WHERE EXTRACT(quarter FROM order_date) = 1	
+	GROUP BY EXTRACT(week FROM order_date);
+
+```
+
+| week | order_quantity |
+|------|----------------|
+| 1 |	2 |
+| 5 |	2 | 
+| 6 |	2 |
+| 7 |	1 | 
+| 10 |	1 | 
+| 12 |	1 |
+
+ Find each quarter and their total qty sale
+
+ ```sql
+
+WITH RECURSIVE quarters AS (  SELECT 1 AS quarter
+					 			
+								UNION ALL
+							  
+							 SELECT quarter + 1 AS quarter
+							 FROM quarters
+							 WHERE quarter + 1 <=4
+					
+							
+				 ),
+				 
+quarter_orders AS ( SELECT EXTRACT(quarter FROM order_date) AS quarter,
+						   COUNT(order_id) AS order_quantity
+						FROM orders
+						GROUP BY EXTRACT(quarter FROM order_date)
+				  )
+				  
+SELECT q.quarter, 
+       COALESCE(o.order_quantity,0) AS order_quantity
+FROM quarters AS q
+LEFT JOIN quarter_orders AS o ON q.quarter = o.quarter
+ORDER BY q.quarter;
+
+```
+
+| quarter | order_quantity |
+|---------|----------------|
+| 1 |	9 |
+| 2 |	10 |
+| 3 |	2 |
+| 4 |	0 |
+
+
+
+I have produced the same output but with orders based on the week number instead of the quarter.
+
+```sql
+
+WITH RECURSIVE months AS ( SELECT 1 AS month
+						 
+						UNION ALL
+						
+						 SELECT month + 1 AS month 
+						   FROM months 
+						   WHERE month + 1 <=12
+						),
+						
+	month_orders AS (SELECT EXTRACT(month FROM order_date) AS month,
+       						COUNT(order_id) AS order_quantity
+    					FROM orders
+						GROUP BY EXTRACT(month FROM order_date)
+				   )
+				   
+	SELECT m.month,
+		   COALESCE(o.order_quantity, 0) AS order_quantity
+	 FROM months AS m
+	 LEFT JOIN month_orders AS o ON m.month = o.month
+	 ORDER BY m.month; 
+		
+```	
+
+ | month | order_quantity |
+ |-------|----------------|
+| 1 |	2 |
+| 2 |	5 |
+| 3 |	2 |
+| 4 |	4 |
+| 5 |	5 |
+| 6	| 1 |
+| 7	| 1 |
+| 8	| 1 |
+| 9	| 0 |
+| 10	| 0 |
+| 11	| 0 |
+| 12	| 0	 |
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+	
