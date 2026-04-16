@@ -301,4 +301,101 @@ WITH names AS (SELECT CONCAT(user_firstname,' ',user_lastname) AS user_name,
 
 
 --------------------------------------------------------------------------------------------------------------------------------------------
-	
+
+**Day 33/50 SQL challenge**
+
+
+```sql
+
+CREATE TABLE fb_active_users (
+    user_id INT,
+    name VARCHAR(50),
+    status VARCHAR(10),
+    country VARCHAR(50)
+);
+
+-- Insert records into fb_active_users
+INSERT INTO fb_active_users (user_id, name, status, country) VALUES
+(33, 'Amanda Leon', 'open', 'Australia'),
+(27, 'Jessica Farrell', 'open', 'Luxembourg'),
+(18, 'Wanda Ramirez', 'open', 'USA'),
+(50, 'Samuel Miller', 'closed', 'Brazil'),
+(16, 'Jacob York', 'open', 'Australia'),
+(25, 'Natasha Bradford', 'closed', 'USA'),
+(34, 'Donald Ross', 'closed', 'China'),
+(52, 'Michelle Jimenez', 'open', 'USA'),
+(11, 'Theresa John', 'open', 'China'),
+(37, 'Michael Turner', 'closed', 'Australia'),
+(32, 'Catherine Hurst', 'closed', 'Mali'),
+(61, 'Tina Turner', 'open', 'Luxembourg'),
+(4, 'Ashley Sparks', 'open', 'China'),
+(82, 'Jacob York', 'closed', 'USA'),
+(87, 'David Taylor', 'closed', 'USA'),
+(78, 'Zachary Anderson', 'open', 'China'),
+(5, 'Tiger Leon', 'closed', 'China'),
+(56, 'Theresa Weaver', 'closed', 'Brazil'),
+(21, 'Tonya Johnson', 'closed', 'Mali'),
+(89, 'Kyle Curry', 'closed', 'Mali'),
+(7, 'Donald Jim', 'open', 'USA'),
+(22, 'Michael Bone', 'open', 'Canada'),
+(31, 'Sara Michaels', 'open', 'Denmark');
+
+```
+
+You have meta table with columns
+user_id, name, status, country
+
+Output share of US users that are active. 
+Active users are the ones with an 
+"open" status in the table.
+
+Return total users and active users
+and active users share for US
+
+```sql
+			
+WITH usa_active_users AS (SELECT user_id,
+       CASE WHEN status = 'open' THEN 1 
+            ELSE 0 
+			END AS active_users
+	 FROM fb_active_users
+	 WHERE country = 'USA'
+					 )
+					 
+SELECT COUNT(user_id) AS total_users,
+       SUM(active_users) AS active_users,
+	    ROUND(100*SUM(active_users)/COUNT(user_id),2) AS active_user_share_percent
+  FROM usa_active_users; 
+
+```
+
+| total_users | active_users | active_user_share_percent |
+|-------------|--------------|---------------------------|
+| 6 |	3 |	50.00 |
+
+
+Find non_active users share for China
+
+```sql
+
+WITH china_inactive_users AS (SELECT user_id,
+       CASE WHEN status = 'closed' THEN 1 
+            ELSE 0 
+			END AS inactive_users
+	 FROM fb_active_users
+	 WHERE country = 'China'
+					 )
+					 
+SELECT COUNT(user_id) AS total_users,
+       SUM(inactive_users) AS inactive_users,
+	    ROUND(100*SUM(inactive_users)/COUNT(user_id),2) AS inactive_user_share_percent
+  FROM china_inactive_users; 
+
+``` 
+
+| total_users | inactive_users | inactive_user_share_percent |
+|-------------|----------------|-----------------------------|
+| 5 |	2 |	40.00 |
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------
